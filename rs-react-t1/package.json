@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "lint:dirt": "eslint --config ./eslint.config.noprettier.js .",
     "preview": "vite preview",
     "prepare": "husky",
     "format:fix": "prettier --write ."
@@ -35,5 +36,10 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
-  }
+  },
+  "description": "## React + TypeScript + Vite",
+  "main": "eslint.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
