@@ -2,13 +2,10 @@ import * as React from 'react';
 import { externalStorage } from '../storage/external';
 import { userStorage } from '../storage/local';
 
-interface IFormControlProps {
-  children?: React.ReactElement;
-}
-
 const formStyles = `  
 flex
 gap-2
+max-sm:flex-col
 `;
 
 const inputStyles = `
@@ -33,6 +30,10 @@ transition-[background-color]
 duration-300
 hover:bg-blue-100
 `;
+
+interface IFormControlProps {
+  children?: React.ReactElement;
+}
 
 export class FormControl extends React.Component<IFormControlProps> {
   public state: { input: string };
@@ -86,7 +87,7 @@ export class FormControl extends React.Component<IFormControlProps> {
     return (
       <form className={`${formStyles} `} onSubmit={this.handlerSubmit}>
         <input
-          className={`${inputStyles} `}
+          className={`${inputStyles}`}
           type="text"
           placeholder="search by name"
           value={this.state.input}

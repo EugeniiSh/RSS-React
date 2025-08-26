@@ -7,16 +7,19 @@ interface IAppProps {
 const appStyles = `  
 flex
 flex-col
+gap-[10vh]
+pt-[10vh]
 items-center
-w-screen 
+
+w-screen
 h-screen
-pt-20
-bg-containerBg`;
+bg-containerBg
+`;
 
 export class App extends React.Component<IAppProps> {
   render(): React.ReactNode {
     const { children } = this.props;
 
-    return <div className={`${appStyles} `}>{children}</div>;
+    return <div className={`${appStyles}`}>{children}</div>;
   }
 }

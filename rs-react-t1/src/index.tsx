@@ -4,6 +4,8 @@ import './index.css';
 import { App } from './App.tsx';
 import { Header } from './components/header.tsx';
 import { FormControl } from './components/formControl.tsx';
+import { Main } from './components/main.tsx';
+import { CardList } from './components/cardList.tsx';
 
 const root = document.getElementById('root');
 
@@ -14,6 +16,9 @@ if (root) {
         <Header>
           <FormControl></FormControl>
         </Header>
+        <Main>
+          <CardList></CardList>
+        </Main>
       </App>
     </StrictMode>
   );
