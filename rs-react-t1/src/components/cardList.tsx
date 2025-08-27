@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Card } from './card';
 
+import type { IHttpResponse } from '../storage/external';
+
 const cardListStyles = `
 flex
 flex-col
@@ -14,16 +16,29 @@ overflow-auto
 max-sm:w-2xs
 `;
 
-export class CardList extends React.Component {
+const noFoundStyles = `
+text-center
+first-letter:uppercase
+`;
+
+interface ICardListProps {
+  children?: React.ReactElement;
+  cardsData: IHttpResponse;
+}
+
+export class CardList extends React.Component<ICardListProps> {
   render() {
-    return (
-      <ul className={`${cardListStyles} `}>
-        {Array(3)
-          .fill(0)
-          .map((_, index) => {
-            return <Card key={index}></Card>;
-          })}
-      </ul>
-    );
+    const data = this.props.cardsData.data;
+    let renderElements: React.JSX.Element | React.JSX.Element[];
+
+    if (data === null) {
+      renderElements = <li className={noFoundStyles}>nothing found</li>;
+    } else {
+      renderElements = data.map((pokeInfo) => {
+        return <Card key={pokeInfo.name} info={pokeInfo}></Card>;
+      });
+    }
+
+    return <ul className={`${cardListStyles} `}>{renderElements}</ul>;
   }
 }

@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import type { IDetailedInfo } from '../storage/external';
+
 const cardLiStyles = `
 flex
 rounded-xl
@@ -38,29 +40,29 @@ font-bold
 capitalize
 `;
 
-export class Card extends React.Component {
+interface ICardProps {
+  children?: React.ReactElement;
+  info: IDetailedInfo;
+}
+
+export class Card extends React.Component<ICardProps> {
   render() {
+    const { name, abilities, sprites } = this.props.info;
     return (
       <li className={`${cardLiStyles}`}>
         <div className={`${cardImgContainerStyles}`}>
           <img
             className={`${cardImgStyles}`}
-            src="./src/assets/react.svg"
-            alt="card image"
+            src={sprites.front_default}
+            alt={name}
           ></img>
         </div>
         <dl className={`${cardDlStyles}`}>
-          <h3 className={`${cardH3Styles}`}>kukumber</h3>
-          {Array(3)
-            .fill(0)
-            .map((_, index) => {
-              return (
-                <React.Fragment key={index}>
-                  <dt className={`${cardDtStyles}`}>description termin</dt>
-                  <dd>description details</dd>
-                </React.Fragment>
-              );
-            })}
+          <h3 className={`${cardH3Styles}`}>{name}</h3>
+          <dt className={`${cardDtStyles}`}>abilities</dt>
+          {abilities.map(({ ability }) => {
+            return <dd key={ability.name}>{ability.name}</dd>;
+          })}
         </dl>
       </li>
     );

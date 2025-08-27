@@ -1,8 +1,10 @@
-import type { IDetailedData, IInitialData } from './external';
+import type { IDetailedInfo } from './external';
 
 interface IStorageObject {
   last: string;
-  [key: string]: IDetailedData | IInitialData | string;
+  other: {
+    [key: string]: IDetailedInfo[] | null;
+  };
 }
 
 class UserStorage {
@@ -12,7 +14,7 @@ class UserStorage {
 
   constructor() {
     this.lsKey = 'RssRcEvSh';
-    this.startValue = { last: '' };
+    this.startValue = { last: '', other: {} };
   }
 
   public getStorage(): IStorageObject {

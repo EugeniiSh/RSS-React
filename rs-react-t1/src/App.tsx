@@ -1,7 +1,13 @@
 import * as React from 'react';
+import { Header } from './components/header.tsx';
+import { FormControl } from './components/formControl.tsx';
+import { Main } from './components/main.tsx';
+import { CardList } from './components/cardList.tsx';
+
+import type { IHttpResponse } from './storage/external.tsx';
 
 interface IAppProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const appStyles = `  
@@ -17,9 +23,23 @@ bg-containerBg
 `;
 
 export class App extends React.Component<IAppProps> {
-  render(): React.ReactNode {
-    const { children } = this.props;
+  public state: IHttpResponse;
 
-    return <div className={`${appStyles}`}>{children}</div>;
+  constructor(props: IAppProps) {
+    super(props);
+    this.state = { data: null, error: null };
+  }
+
+  render(): React.ReactNode {
+    return (
+      <div className={`app ${appStyles}`}>
+        <Header>
+          <FormControl setAppState={(arg) => this.setState(arg)}></FormControl>
+        </Header>
+        <Main>
+          <CardList cardsData={this.state}></CardList>
+        </Main>
+      </div>
+    );
   }
 }

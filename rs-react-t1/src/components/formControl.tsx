@@ -2,6 +2,8 @@ import * as React from 'react';
 import { externalStorage } from '../storage/external';
 import { userStorage } from '../storage/local';
 
+import type { IHttpResponse } from '../storage/external';
+
 const formStyles = `  
 flex
 gap-2
@@ -33,6 +35,7 @@ hover:bg-blue-100
 
 interface IFormControlProps {
   children?: React.ReactElement;
+  setAppState: (arg: IHttpResponse) => void;
 }
 
 export class FormControl extends React.Component<IFormControlProps> {
@@ -53,35 +56,49 @@ export class FormControl extends React.Component<IFormControlProps> {
     const request = this.state.input;
     const LS = userStorage.getStorage();
 
-    if (LS[request]) {
+    if (LS.other[request]) {
       LS.last = request;
       userStorage.setStorage(LS);
-
-      console.log('Обработка данных из LS', LS[request]);
+      this.props.setAppState({ data: LS.other[request], error: null });
 
       return;
     }
 
     const respons = await externalStorage.getPokemon(request);
     if (respons.data) {
-      LS[request] = respons.data;
+      LS.other[request] = respons.data;
       LS.last = request;
       userStorage.setStorage(LS);
-
-      console.log('Обработка данных из сетевого запроса', respons.data);
+      this.props.setAppState(respons);
 
       return;
     }
 
     if (respons.error) {
       if (respons.error.type === 'response') {
-        LS[request] = respons.error.status.toString();
+        LS.other[request] = respons.data;
         userStorage.setStorage(LS);
-
-        console.log('Обработка не существующих данных', respons.data);
+        this.props.setAppState(respons);
       }
     }
   };
+
+  componentDidMount(): void {
+    const storage = userStorage.getStorage();
+    const lastRequest = storage.other[storage.last];
+
+    if (lastRequest) {
+      this.props.setAppState({ data: lastRequest, error: null });
+      return;
+    }
+
+    externalStorage.getPokemon('').then((res) => {
+      storage.last = '';
+      storage.other[storage.last] = res.data;
+      userStorage.setStorage(storage);
+      this.props.setAppState(res);
+    });
+  }
 
   render(): React.ReactNode {
     return (

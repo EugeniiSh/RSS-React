@@ -1,15 +1,20 @@
-export interface IInitialData {
+export interface IShortInfo {
   name: string;
   url: string;
 }
 
-export interface IDetailedData {
-  abilities: { ability: IInitialData }[];
+export interface IDetailedInfo {
+  name: string;
+  abilities: { ability: IShortInfo }[];
   sprites: { front_default: string };
 }
 
-interface HttpResponse {
-  data: IInitialData | IDetailedData | null;
+export interface IInitialData {
+  results: IShortInfo[];
+}
+
+export interface IHttpResponse {
+  data: IDetailedInfo[] | null;
   error:
     | {
         type: 'code';
@@ -23,8 +28,6 @@ interface HttpResponse {
     | null;
 }
 
-// type TErrorData = Error | { status: number } | unknown
-
 class PokemonStorage {
   protected mainUrl: 'https://pokeapi.co/api/v2/pokemon/';
 
@@ -32,14 +35,25 @@ class PokemonStorage {
     this.mainUrl = 'https://pokeapi.co/api/v2/pokemon/';
   }
 
-  public async getPokemon(name: string = ''): Promise<HttpResponse> {
+  public async getPokemon(name: string = ''): Promise<IHttpResponse> {
     try {
       if (name === '') {
-        const response = await fetch(`${this.mainUrl}`);
-        if (response.status !== 200) throw response.status;
-        const resData: IInitialData = await response.json();
+        const response1 = await fetch(`${this.mainUrl}`);
+        if (response1.status !== 200) throw response1.status;
+        const resData1: IInitialData = await response1.json();
+
+        const response2 = await Promise.all(
+          resData1.results.map((data) => fetch(data.url))
+        );
+        const resData2: IDetailedInfo[] = await Promise.all(
+          response2.map((response) => {
+            if (response.status !== 200) throw response.status;
+            return response.json();
+          })
+        );
+
         return {
-          data: resData,
+          data: resData2,
           error: null,
         };
       }
@@ -47,11 +61,9 @@ class PokemonStorage {
       const response = await fetch(`${this.mainUrl}${name.trim()}`);
       if (response.status !== 200) throw response.status;
 
-      // console.log('response =', response);
-
-      const resData: IDetailedData = await response.json();
+      const resData: IDetailedInfo = await response.json();
       return {
-        data: resData,
+        data: [resData],
         error: null,
       };
     } catch (error) {
