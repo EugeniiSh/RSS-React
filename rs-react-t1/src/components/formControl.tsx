@@ -2,7 +2,8 @@ import * as React from 'react';
 import { externalStorage } from '../storage/external';
 import { userStorage } from '../storage/local';
 
-import type { IHttpResponse } from '../storage/external';
+// import type { IHttpResponse } from '../storage/external';
+import type { TAppState } from '../App';
 
 const formStyles = `  
 flex
@@ -35,7 +36,7 @@ hover:bg-blue-100
 
 interface IFormControlProps {
   children?: React.ReactElement;
-  setAppState: (arg: IHttpResponse) => void;
+  setAppState: (arg: TAppState) => void;
 }
 
 export class FormControl extends React.Component<IFormControlProps> {
@@ -53,23 +54,28 @@ export class FormControl extends React.Component<IFormControlProps> {
 
   handlerSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const request = this.state.input;
+    const request = this.state.input.trim();
     const LS = userStorage.getStorage();
 
     if (LS.other[request]) {
       LS.last = request;
       userStorage.setStorage(LS);
-      this.props.setAppState({ data: LS.other[request], error: null });
+      this.props.setAppState({
+        data: LS.other[request],
+        error: null,
+        loading: false,
+      });
 
       return;
     }
 
+    this.props.setAppState({ data: null, error: null, loading: true });
     const respons = await externalStorage.getPokemon(request);
     if (respons.data) {
       LS.other[request] = respons.data;
       LS.last = request;
       userStorage.setStorage(LS);
-      this.props.setAppState(respons);
+      this.props.setAppState({ ...respons, loading: false });
 
       return;
     }
@@ -78,7 +84,7 @@ export class FormControl extends React.Component<IFormControlProps> {
       if (respons.error.type === 'response') {
         LS.other[request] = respons.data;
         userStorage.setStorage(LS);
-        this.props.setAppState(respons);
+        this.props.setAppState({ ...respons, loading: false });
       }
     }
   };
@@ -88,15 +94,20 @@ export class FormControl extends React.Component<IFormControlProps> {
     const lastRequest = storage.other[storage.last];
 
     if (lastRequest) {
-      this.props.setAppState({ data: lastRequest, error: null });
+      this.props.setAppState({
+        data: lastRequest,
+        error: null,
+        loading: false,
+      });
       return;
     }
 
+    this.props.setAppState({ data: null, error: null, loading: true });
     externalStorage.getPokemon('').then((res) => {
       storage.last = '';
       storage.other[storage.last] = res.data;
       userStorage.setStorage(storage);
-      this.props.setAppState(res);
+      this.props.setAppState({ ...res, loading: false });
     });
   }
 

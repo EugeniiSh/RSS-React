@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Card } from './card';
 
-import type { IHttpResponse } from '../storage/external';
+import type { TAppState } from '../App';
 
 const cardListStyles = `
 flex
@@ -16,27 +16,32 @@ overflow-auto
 max-sm:w-2xs
 `;
 
-const noFoundStyles = `
+const infoBolckStyles = `
 text-center
 first-letter:uppercase
 `;
 
 interface ICardListProps {
   children?: React.ReactElement;
-  cardsData: IHttpResponse;
+  cardsData: TAppState;
 }
 
 export class CardList extends React.Component<ICardListProps> {
   render() {
-    const data = this.props.cardsData.data;
+    const dataState = this.props.cardsData;
     let renderElements: React.JSX.Element | React.JSX.Element[];
 
-    if (data === null) {
-      renderElements = <li className={noFoundStyles}>nothing found</li>;
-    } else {
-      renderElements = data.map((pokeInfo) => {
-        return <Card key={pokeInfo.name} info={pokeInfo}></Card>;
-      });
+    switch (true) {
+      case dataState.loading:
+        renderElements = <li className={infoBolckStyles}>loading...</li>;
+        break;
+      case dataState.data === null:
+        renderElements = <li className={infoBolckStyles}>nothing found</li>;
+        break;
+      default:
+        renderElements = dataState.data.map((pokeInfo) => {
+          return <Card key={pokeInfo.name} info={pokeInfo}></Card>;
+        });
     }
 
     return <ul className={`${cardListStyles} `}>{renderElements}</ul>;

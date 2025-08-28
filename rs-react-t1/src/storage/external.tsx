@@ -35,9 +35,11 @@ class PokemonStorage {
     this.mainUrl = 'https://pokeapi.co/api/v2/pokemon/';
   }
 
-  public async getPokemon(name: string = ''): Promise<IHttpResponse> {
+  public async getPokemon(requestName: string = ''): Promise<IHttpResponse> {
     try {
-      if (name === '') {
+      const trimName = requestName.trim();
+
+      if (trimName === '') {
         const response1 = await fetch(`${this.mainUrl}`);
         if (response1.status !== 200) throw response1.status;
         const resData1: IInitialData = await response1.json();
@@ -52,18 +54,25 @@ class PokemonStorage {
           })
         );
 
+        const cleanData = resData2.map((data) => {
+          const { name, abilities, sprites } = data;
+          return { name, abilities, sprites };
+        });
+
         return {
-          data: resData2,
+          data: cleanData,
           error: null,
         };
       }
 
-      const response = await fetch(`${this.mainUrl}${name.trim()}`);
+      const response = await fetch(`${this.mainUrl}${trimName}`);
       if (response.status !== 200) throw response.status;
 
       const resData: IDetailedInfo = await response.json();
+      const { name, abilities, sprites } = resData;
+      const cleanData = { name, abilities, sprites };
       return {
-        data: [resData],
+        data: [cleanData],
         error: null,
       };
     } catch (error) {

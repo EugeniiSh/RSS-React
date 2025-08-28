@@ -6,10 +6,6 @@ import { CardList } from './components/cardList.tsx';
 
 import type { IHttpResponse } from './storage/external.tsx';
 
-interface IAppProps {
-  children?: React.ReactNode;
-}
-
 const appStyles = `  
 flex
 flex-col
@@ -22,12 +18,16 @@ h-screen
 bg-containerBg
 `;
 
-export class App extends React.Component<IAppProps> {
-  public state: IHttpResponse;
+interface IAppProps {
+  children?: React.ReactNode;
+}
 
+export type TAppState = IHttpResponse & { loading: boolean };
+
+export class App extends React.Component<IAppProps, TAppState> {
   constructor(props: IAppProps) {
     super(props);
-    this.state = { data: null, error: null };
+    this.state = { data: null, error: null, loading: true };
   }
 
   render(): React.ReactNode {
