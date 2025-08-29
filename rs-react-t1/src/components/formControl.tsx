@@ -2,7 +2,6 @@ import * as React from 'react';
 import { externalStorage } from '../storage/external';
 import { userStorage } from '../storage/local';
 
-// import type { IHttpResponse } from '../storage/external';
 import type { TAppState } from '../App';
 
 const formStyles = `  

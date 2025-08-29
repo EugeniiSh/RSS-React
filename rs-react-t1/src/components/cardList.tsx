@@ -8,7 +8,7 @@ flex
 flex-col
 gap-2
 w-xs
-max-h-[70vh]
+max-h-[66vh]
 p-2
 shadow-md
 rounded-xl
