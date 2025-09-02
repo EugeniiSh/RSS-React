@@ -93,6 +93,7 @@ export class FormControl extends React.Component<IFormControlProps> {
     const lastRequest = storage.other[storage.last];
 
     if (lastRequest) {
+      this.setState({ input: storage.last });
       this.props.setAppState({
         data: lastRequest,
         error: null,

@@ -30,10 +30,12 @@ export class CardList extends React.Component<ICardListProps> {
   render() {
     const dataState = this.props.cardsData;
     let renderElements: React.JSX.Element | React.JSX.Element[];
+    let isBusy = false;
 
     switch (true) {
       case dataState.loading:
         renderElements = <li className={infoBolckStyles}>loading...</li>;
+        isBusy = true;
         break;
       case dataState.data === null:
         renderElements = <li className={infoBolckStyles}>nothing found</li>;
@@ -44,6 +46,10 @@ export class CardList extends React.Component<ICardListProps> {
         });
     }
 
-    return <ul className={`${cardListStyles} `}>{renderElements}</ul>;
+    return (
+      <ul className={`${cardListStyles} `} aria-busy={isBusy}>
+        {renderElements}
+      </ul>
+    );
   }
 }
